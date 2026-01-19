@@ -10,7 +10,7 @@ const {
 
 router.post("/", createExpense);
 router.get("/", getExpenses);
-router.get("/balance/all", getBalance);
+router.get("/balance", getBalance);
 router.delete("/:id", deleteExpense);
 
 module.exports = router;    
