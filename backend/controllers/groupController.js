@@ -1,9 +1,6 @@
 const Group = require("../models/group");
 const Expense = require("../models/expense");
 
-// @desc    Create a new group
-// @route   POST /api/groups
-// @access  Private
 exports.createGroup = async (req, res) => {
   try {
     const { name, members } = req.body;
@@ -12,7 +9,6 @@ exports.createGroup = async (req, res) => {
       return res.status(400).json({ message: "Please provide name and members" });
     }
 
-    // Add creator to members if not present
     if (!members.includes(req.user.id)) {
       members.push(req.user.id);
     }
@@ -31,9 +27,7 @@ exports.createGroup = async (req, res) => {
   }
 };
 
-// @desc    Get user's groups
-// @route   GET /api/groups
-// @access  Private
+
 exports.getGroups = async (req, res) => {
   try {
     const groups = await Group.find({ members: req.user.id })
@@ -45,9 +39,6 @@ exports.getGroups = async (req, res) => {
   }
 };
 
-// @desc    Get specific group details
-// @route   GET /api/groups/:id
-// @access  Private
 exports.getGroupDetails = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id).populate("members", "name email");
@@ -56,12 +47,9 @@ exports.getGroupDetails = async (req, res) => {
         return res.status(404).json({ message: "Group not found" });
     }
 
-    // Check if user is member
     if (!group.members.some(member => member._id.toString() === req.user.id)) {
         return res.status(403).json({ message: "Not authorized to view this group" });
     }
-
-    // Get expenses for this group
     const expenses = await Expense.find({ groupId: req.params.id })
         .populate("paidBy", "name")
         .populate("participants", "name");

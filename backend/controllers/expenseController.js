@@ -10,7 +10,6 @@ exports.createExpense = async (req, res) => {
     }
 
     // 2. Logical Validation: paidBy must be in participants
-    // Note: paidBy and participants are now User IDs (strings in JSON)
     if (!participants.includes(paidBy)) {
       return res.status(400).json({ message: "PaidBy must be in participants" });
     }

@@ -7,7 +7,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="container">
-        <Link to="/" className="nav-logo">Splitwise Clone</Link>
+        <Link to="/" className="nav-logo">Splitwise</Link>
         <div className="nav-links">
           {user ? (
             <>

@@ -10,8 +10,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      // Decode token or fetch user profile could go here
-      // For now, we trust the token and store basic user info if available
       const storedUser = JSON.parse(localStorage.getItem("user"));
       setUser(storedUser);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;

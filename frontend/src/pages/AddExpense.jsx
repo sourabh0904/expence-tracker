@@ -7,25 +7,21 @@ const AddExpense = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Form State
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [totalAmount, setTotalAmount] = useState(0); // For validation display
+  const [totalAmount, setTotalAmount] = useState(0); 
   const [paidBy, setPaidBy] = useState("");
   
-  // Group & Participants State
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
-  const [allUsers, setAllUsers] = useState([]); // All system users (for non-group expenses)
-  const [participants, setParticipants] = useState([]); // Array of user IDs
+  const [allUsers, setAllUsers] = useState([]);   
+  const [participants, setParticipants] = useState([]); 
   
-  // Split State
   const [splitType, setSplitType] = useState("equal");
-  const [splitDetails, setSplitDetails] = useState({}); // { userId: { amount, percentage } }
+  const [splitDetails, setSplitDetails] = useState({}); 
 
   const [error, setError] = useState(null);
 
-  // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,22 +41,17 @@ const AddExpense = () => {
     fetchData();
   }, [user]);
 
-  // Update totalAmount number when string changes
   useEffect(() => {
       setTotalAmount(Number(amount) || 0);
   }, [amount]);
-
-  // Handle Group Selection
   useEffect(() => {
     if (selectedGroup) {
       const group = groups.find(g => g._id === selectedGroup);
       if (group) {
-        // Pre-select group members
         const memberIds = group.members.map(m => m._id);
         setParticipants(memberIds);
       }
     } else {
-        // Reset participants if no group selected (optional, maybe keep them)
         setParticipants([]);
     }
   }, [selectedGroup, groups]);
@@ -71,7 +62,6 @@ const AddExpense = () => {
       setParticipants([...participants, userId]);
     } else {
       setParticipants(participants.filter((id) => id !== userId));
-      // Remove from splitDetails
       const newDetails = { ...splitDetails };
       delete newDetails[userId];
       setSplitDetails(newDetails);
@@ -92,7 +82,6 @@ const AddExpense = () => {
     e.preventDefault();
     setError(null);
 
-    // Basic Validation
     if (!participants.includes(paidBy)) {
       setError("Payer must be included in participants list");
       return;
@@ -102,7 +91,6 @@ const AddExpense = () => {
         return;
     }
 
-    // Advanced Split Validation
     const detailsArray = participants.map(userId => ({
         userId,
         amount: splitDetails[userId]?.amount || 0,
@@ -139,10 +127,9 @@ const AddExpense = () => {
     }
   };
 
-  // Determine which list of users to show
   const visibleUsers = selectedGroup 
-    ? (groups.find(g => g._id === selectedGroup)?.members || []) // Show group members (populated objects)
-    : allUsers; // Show all users
+    ? (groups.find(g => g._id === selectedGroup)?.members || []) 
+    : allUsers; 
 
   return (
     <div className="container">
@@ -174,7 +161,6 @@ const AddExpense = () => {
           <label>Paid By</label>
           <select value={paidBy} onChange={(e) => setPaidBy(e.target.value)} className="form-control" required style={{ width: "100%", padding: "10px" }}>
             <option value="">Select User</option>
-            {/* Show all users options to ensure payer is selectable even if filtered logic changes, or stick to visibleUsers */}
             {(selectedGroup ? visibleUsers : allUsers).map((u) => (
               <option key={u._id} value={u._id}>{u.name}</option>
             ))}
