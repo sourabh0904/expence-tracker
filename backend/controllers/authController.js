@@ -46,6 +46,10 @@ exports.signup = async (req, res) => {
       res.status(400).json({ message: "Invalid user data" });
     }
   } catch (error) {
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({ message: messages.join(", ") });
+    }
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };

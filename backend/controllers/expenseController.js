@@ -50,7 +50,7 @@ exports.createExpense = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   try {
-    const expenses = await Expense.find()
+    const expenses = await Expense.find({ participants: req.user.id })
       .populate("paidBy", "name")
       .populate("participants", "name");
     res.json(expenses);
@@ -70,7 +70,7 @@ exports.deleteExpense = async (req, res) => {
 
 exports.getBalance = async (req, res) => {
   try {
-    const expenses = await Expense.find()
+    const expenses = await Expense.find({ participants: req.user.id })
       .populate("paidBy", "name")
       .populate("participants", "name")
       .populate({ path: "splitDetails.userId", select: "name" }); // Populate split details users
@@ -110,7 +110,16 @@ exports.getBalance = async (req, res) => {
         }
       });
     });
-    res.json(balance);
+    
+    // Filter balance to only show logged-in user's balance
+    const userBalance = {};
+    if (balance[req.user.name]) {
+        userBalance[req.user.name] = balance[req.user.name];
+    } else {
+        userBalance[req.user.name] = 0;
+    }
+
+    res.json(userBalance);
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
